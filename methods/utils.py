@@ -1,6 +1,18 @@
 import networkx as nx
 
-from typing import Any, Set
+from typing import Any, Iterable, Set
+
+
+def cartesian_sum(s1: Set, s2: Set) -> Set:
+    """
+    Returns the Cartesian sum (sum of all pairs of Cartesian product) of the
+    input sets.
+    :param s1: An input set of elements (must implement `+`).
+    :param s2: A second input set of the same type as the first.
+    :return: An output set of the Cartesian product of `s1`, `s2` with the
+        same type as the input sets.
+    """
+    return {a + b for a in s1 for b in s2}
 
 
 def copy(graph: nx.Graph, attribute: Any, parts: int) -> nx.Graph:
@@ -25,13 +37,13 @@ def copy(graph: nx.Graph, attribute: Any, parts: int) -> nx.Graph:
     return dp_graph
 
 
-def cartesian_sum(s1: Set, s2: Set) -> Set:
+def flatten(sets: Iterable[Set]) -> Set:
     """
-    Returns the Cartesian sum (sum of all pairs of Cartesian product) of the
-    input sets.
-    :param s1: An input set of elements (must implement `+`).
-    :param s2: A second input set of the same type as the first.
-    :return: An output set of the Cartesian product of `s1`, `s2` with the
-        same type as the input sets.
+    Merges an iterable of sets.
+    :param sets: Any iterable of sets.
+    :return: The union of all input sets.
     """
-    return {a + b for a in s1 for b in s2}
+    out = set()
+    for s in sets:
+        out |= s
+    return out
