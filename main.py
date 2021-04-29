@@ -1,4 +1,4 @@
-from typing import Any, Dict, Hashable, Optional
+from typing import Dict, Hashable, Optional
 from enum import Enum
 
 import networkx as nx
@@ -15,7 +15,7 @@ def partition(tree: nx.Graph,
               parts: int,
               lower: float,
               upper: float,
-              mode: Mode = Mode.ISET) -> Optional[Dict[Any, int]]:
+              mode: Mode = Mode.ISET) -> Optional[Dict[Hashable, int]]:
     """
     Partitions the input tree into `parts` partitions such that each partition
     has weight between `lower` and `upper`, inclusive, where weight is defined
