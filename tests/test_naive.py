@@ -1,4 +1,4 @@
-from methods.naive import naive_decision
+from src.lupartition.methods.naive import naive_decision
 from tests.test_graphs import tree1, tree2, tree3
 
 
