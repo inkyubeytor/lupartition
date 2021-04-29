@@ -14,7 +14,7 @@ def naive_decision(tree, key, parts, lower, upper):
     """
     Implements the decision problem variant of the naive O(p^4 u^2 n) algorithm.
     """
-    dp_tree = copy(tree, key, parts)
+    dp_tree = copy(tree, key, parts, set)
     # We adopt the convention that the (k-1)th element of the dp table for a
     # node v is our current S(T_v, k).
 

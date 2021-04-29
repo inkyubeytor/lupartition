@@ -1,6 +1,6 @@
 import networkx as nx
 
-from typing import Hashable, Iterable, Set
+from typing import Any, Callable, Hashable, Iterable, Set
 
 
 def cartesian_sum(s1: Set, s2: Set) -> Set:
@@ -15,7 +15,10 @@ def cartesian_sum(s1: Set, s2: Set) -> Set:
     return {a + b for a in s1 for b in s2}
 
 
-def copy(graph: nx.Graph, attribute: Hashable, parts: int) -> nx.Graph:
+def copy(graph: nx.Graph,
+         attribute: Hashable,
+         parts: int,
+         default: Callable[[], Any]) -> nx.Graph:
     """
     Creates a "Fresh Data" copy of the input graph, adding the given attribute
     key as an attribute `"weight"` and creating an attribute `"table"` with a
@@ -23,6 +26,7 @@ def copy(graph: nx.Graph, attribute: Hashable, parts: int) -> nx.Graph:
     :param graph: The input graph to copy.
     :param attribute: The attribute to use for weights.
     :param parts: The length of the dynamic programming table.
+    :param default: A constructor for the starting value for each table entry.
     :return: A copy of `graph` usable for dynamic programming algorithms.
     """
     # Perform the "Fresh Data" copy
@@ -32,7 +36,7 @@ def copy(graph: nx.Graph, attribute: Hashable, parts: int) -> nx.Graph:
 
     for node, node_data in graph.nodes.items():
         dp_graph.nodes[node]["weight"] = node_data[attribute]
-        dp_graph.nodes[node]["table"] = [set() for _ in range(parts)]
+        dp_graph.nodes[node]["table"] = [default() for _ in range(parts)]
 
     return dp_graph
 
