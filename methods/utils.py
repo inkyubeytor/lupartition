@@ -1,6 +1,6 @@
 import networkx as nx
 
-from typing import Any, Iterable, Set
+from typing import Hashable, Iterable, Set
 
 
 def cartesian_sum(s1: Set, s2: Set) -> Set:
@@ -15,7 +15,7 @@ def cartesian_sum(s1: Set, s2: Set) -> Set:
     return {a + b for a in s1 for b in s2}
 
 
-def copy(graph: nx.Graph, attribute: Any, parts: int) -> nx.Graph:
+def copy(graph: nx.Graph, attribute: Hashable, parts: int) -> nx.Graph:
     """
     Creates a "Fresh Data" copy of the input graph, adding the given attribute
     key as an attribute `"weight"` and creating an attribute `"table"` with a

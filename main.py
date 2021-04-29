@@ -1,17 +1,21 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Hashable, Optional
+from enum import Enum
 
 import networkx as nx
 
 
-# TODO: determine type of key
-# TODO: determine how to encode mode
-# TODO: determine type of return dict (something like node -> int)
+class Mode(Enum):
+    NAIVE = "naive"
+    FFT = "fft"
+    ISET = "iset"
+
+
 def partition(tree: nx.Graph,
-              key: Any,
+              key: Hashable,
               parts: int,
               lower: float,
               upper: float,
-              mode="naive") -> Optional[Dict]:
+              mode: Mode = Mode.ISET) -> Optional[Dict[Any, int]]:
     """
     Partitions the input tree into `parts` partitions such that each partition
     has weight between `lower` and `upper`, inclusive, where weight is defined
@@ -26,7 +30,8 @@ def partition(tree: nx.Graph,
     :param lower: The lower weight of a partition.
     :param upper: The upper weight of a partition.
     :param mode: The choice of algorithm to use.
-    :return: A mapping of nodes to partition components, or `None` if no valid
-        partition exists.
+    :return: A mapping of nodes to partition components, where the ith
+        component is represented by the integer i (zero-indexed), or `None` if
+        no valid partition exists.
     """
     raise NotImplementedError
