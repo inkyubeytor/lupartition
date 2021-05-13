@@ -6,7 +6,6 @@ import networkx as nx
 
 class Mode(Enum):
     NAIVE = "naive"
-    FFT = "fft"
     ISET = "iset"
 
 
