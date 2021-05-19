@@ -1,6 +1,8 @@
+from typing import Set
+
 import networkx as nx
 
-from .utils import cartesian_sum, copy, flatten
+from .utils import copy, flatten
 
 
 def naive_partition(tree, key, parts, lower, upper):
@@ -48,3 +50,15 @@ def naive_decision(tree, key, parts, lower, upper):
         root = v
     return any(map(lambda x: lower <= x <= upper,
                    dp_tree.nodes[root]["table"][parts - 1]))
+
+
+def cartesian_sum(s1: Set, s2: Set) -> Set:
+    """
+    Returns the Cartesian sum (sum of all pairs of Cartesian product) of the
+    input sets.
+    :param s1: An input set of elements (must implement `+`).
+    :param s2: A second input set of the same type as the first.
+    :return: An output set of the Cartesian sum of `s1`, `s2` with the same
+        type as the input sets.
+    """
+    return {a + b for a in s1 for b in s2}
