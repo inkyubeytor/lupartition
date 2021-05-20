@@ -73,21 +73,18 @@ def iset_merge(s: Set, d: float) -> Set:
         defining interference between intervals.
     :return: A valid interval set without interfering intervals.
     """
-    # TODO: optimize this computation
+    if len(s) == 0:
+        return set()
+
     out = set()
-    current = list(s)
-    while len(current) > 0:
-        a_low, a_high = min(current, key=lambda x: x[0])
-        interfering, non_interfering = [], []
-        for low, high in current:
-            if low - a_high <= d:
-                interfering.append((low, high))
-            else:
-                non_interfering.append((low, high))
-        _, new_upper = max(interfering, key=lambda x: x[1])
-        current = non_interfering
-        if len(interfering) == 1:  # no interfering intervals
-            out.add((a_low, new_upper))
+    current = list(sorted(s, reverse=True))
+    while len(current) > 1:
+        a_low, a_high = current.pop()
+        b_low, b_high = current.pop()
+        if b_low - a_high <= d:
+            current.append((a_low, max(a_high, b_high)))
         else:
-            current.append((a_low, new_upper))
+            current.append((b_low, b_high))
+            out.add((a_low, a_high))
+    out.add(current.pop())
     return out
