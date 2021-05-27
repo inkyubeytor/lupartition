@@ -1,7 +1,8 @@
 """
 Utilities for tests
 """
-from typing import Dict, Hashable
+from random import randint, uniform
+from typing import Dict, Hashable, Union
 
 import networkx as nx
 
@@ -25,3 +26,26 @@ def check_partition(graph: nx.Graph,
     :return: Whether the partition is valid.
     """
     raise NotImplementedError
+
+
+def generate_tree(nodes: int,
+                  lower: Union[float, int],
+                  upper: Union[float, int],
+                  integral: bool,
+                  key: str) \
+        -> nx.Graph:
+    """
+    Generates a networkx vertex-weighted tree.
+    :param nodes: The number of vertices to generate.
+    :param lower: The (positive) lower bound on weight to randomly assign to
+        the nodes.
+    :param upper: The upper bound on weight to randomly assign to the nodes.
+    :param integral: Whether to use integral weights.
+    :param key: The key to use for node attributes.
+    :return:
+    """
+    gen = randint if integral else uniform
+    tree = nx.generators.random_tree(nodes)
+    for vertex in tree.nodes:
+        tree.nodes[vertex][key] = gen(lower, upper)
+    return tree

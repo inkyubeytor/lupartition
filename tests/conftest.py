@@ -1,10 +1,12 @@
 """
 Create graphs for use in test cases here.
 """
+from typing import Tuple
+
 import networkx as nx
 import pytest
 
-from typing import Tuple
+import tests.utils as utils
 
 
 @pytest.fixture
@@ -87,8 +89,8 @@ def tree3() -> nx.Graph:
     tree = nx.Graph()
     tree.add_nodes_from([(str(i), {"mass": float(i)}) for i in range(7)])
     tree.add_edges_from([("0", "1"), ("0", "2"),
-                          ("1", "3"), ("1", "4"),
-                          ("2", "5"), ("2", "6")])
+                         ("1", "3"), ("1", "4"),
+                         ("2", "5"), ("2", "6")])
     return tree
 
 
@@ -100,3 +102,45 @@ def tree3_pos_test1(tree3) -> Tuple[nx.Graph, str, int, float, float]:
 @pytest.fixture
 def tree3_neg_test1(tree3) -> Tuple[nx.Graph, str, int, float, float]:
     return tree3, "mass", 7, 0.5, 5.5
+
+
+@pytest.fixture
+def rand_tree_int_small1() -> Tuple[nx.Graph, str, int, int, int]:
+    return utils.generate_tree(20, 1, 7, True, "weight"), \
+           "weight", 5, 12, 20
+
+
+@pytest.fixture
+def rand_tree_int_small2() -> Tuple[nx.Graph, str, int, int, int]:
+    return utils.generate_tree(20, 1, 7, True, "weight"), \
+           "weight", 5, 10, 22
+
+
+@pytest.fixture
+def rand_tree_int_small3() -> Tuple[nx.Graph, str, int, int, int]:
+    return utils.generate_tree(20, 1, 7, True, "weight"), \
+           "weight", 4, 15, 25
+
+
+@pytest.fixture
+def rand_tree_int_small4() -> Tuple[nx.Graph, str, int, int, int]:
+    return utils.generate_tree(20, 1, 7, True, "weight"), \
+           "weight", 4, 10, 30
+
+
+@pytest.fixture
+def rand_tree_int_small5() -> Tuple[nx.Graph, str, int, int, int]:
+    return utils.generate_tree(20, 1, 7, True, "weight"), \
+           "weight", 2, 35, 45
+
+
+@pytest.fixture
+def rand_tree_int_large1() -> Tuple[nx.Graph, str, int, int, int]:
+    return utils.generate_tree(2000, 1, 11, True, "weight"), \
+           "weight", 10, 800, 1200
+
+
+@pytest.fixture
+def rand_tree_int_large2() -> Tuple[nx.Graph, str, int, int, int]:
+    return utils.generate_tree(2000, 1, 11, True, "weight"), \
+           "weight", 20, 350, 650
