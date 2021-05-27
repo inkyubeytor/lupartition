@@ -136,11 +136,11 @@ def rand_tree_int_small5() -> Tuple[nx.Graph, str, int, int, int]:
 
 @pytest.fixture
 def rand_tree_int_large1() -> Tuple[nx.Graph, str, int, int, int]:
-    return utils.generate_tree(2000, 1, 11, True, "weight"), \
+    return utils.generate_tree(2000, 1, 9, True, "weight"), \
            "weight", 10, 800, 1200
 
 
 @pytest.fixture
 def rand_tree_int_large2() -> Tuple[nx.Graph, str, int, int, int]:
-    return utils.generate_tree(2000, 1, 11, True, "weight"), \
+    return utils.generate_tree(2000, 1, 9, True, "weight"), \
            "weight", 20, 350, 650
