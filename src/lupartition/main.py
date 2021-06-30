@@ -3,6 +3,9 @@ from enum import Enum
 
 import networkx as nx
 
+from methods.iset import iset_decision, iset_partition
+from methods.naive import naive_decision, naive_partition
+
 
 class Mode(Enum):
     NAIVE = "naive"
@@ -33,7 +36,8 @@ def partition(tree: nx.Graph,
         component is represented by the integer i (zero-indexed), or `None` if
         no valid partition exists.
     """
-    raise NotImplementedError
+    _partition = naive_partition if mode == mode.NAIVE else iset_partition
+    return _partition(tree, key, parts, lower, upper)
 
 
 def decision(tree: nx.Graph,
@@ -58,4 +62,5 @@ def decision(tree: nx.Graph,
     :param mode: The choice of algorithm to use.
     :return: Whether a valid (l, u) partition exists of the input
     """
-    raise NotImplementedError
+    _decision = naive_decision if mode == mode.NAIVE else iset_decision
+    return _decision(tree, key, parts, lower, upper)
