@@ -1,4 +1,4 @@
-from src.lupartition.methods.naive import naive_decision
+from src.lupartition.methods.naive import naive_decision, naive_partition
 from tests.test_graphs import tree1, tree2, tree3
 
 
@@ -33,5 +33,14 @@ def test_naive_decision():
     test_naive_decision_tree3()
 
 
+def test_naive_partition_tree1():
+    naive_partition(tree1, "weight", 3, 4, 6)
+
+
+def test_naive_partition():
+    test_naive_partition_tree1()
+
+
 if __name__ == "__main__":
     test_naive_decision()
+    test_naive_partition()
