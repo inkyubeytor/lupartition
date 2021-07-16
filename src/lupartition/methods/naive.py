@@ -114,7 +114,7 @@ def naive_partition(tree, key, parts, lower, upper):
     for v in nx.dfs_postorder_nodes(dp_tree):
         children = set(dp_tree.neighbors(v)) & processed
         parts_0 = {k: {} for k in range(2, parts + 1)}
-        parts_0[1] = {dp_tree.nodes[v]["weight"]: (None, 0)}
+        parts_0[1] = {dp_tree.nodes[v]["weight"]: {(None, 0)}}
         dp_tree.nodes[v]["table"] = [{"vertex": None, "parts": parts_0}]
         for child in children:
             parts_dict = {}
@@ -123,7 +123,8 @@ def naive_partition(tree, key, parts, lower, upper):
                 # S1 stuff
                 for k_prime in range(1, k + 1):
                     left = dp_tree.nodes[v]["table"][-1]["parts"][k_prime]
-                    right = dp_tree.nodes[child]["table"][-1]["parts"][k - k_prime + 1]
+                    right = dp_tree.nodes[child]["table"][-1]["parts"][
+                        k - k_prime + 1]
                     for a in left:
                         for b in right:
                             try:
@@ -133,7 +134,8 @@ def naive_partition(tree, key, parts, lower, upper):
                 # S2 stuff
                 for k_prime in range(1, k):
                     left = dp_tree.nodes[v]["table"][-1]["parts"][k_prime]
-                    right = dp_tree.nodes[child]["table"][-1]["parts"][k - k_prime]
+                    right = dp_tree.nodes[child]["table"][-1]["parts"][
+                        k - k_prime]
                     for b in right:
                         if lower <= b <= upper:
                             for a in left:
@@ -142,11 +144,50 @@ def naive_partition(tree, key, parts, lower, upper):
                                 except KeyError:
                                     z_dict[a] = {(None, k_prime)}
                 parts_dict[k] = z_dict
-            dp_tree.nodes[v]["table"].append({"vertex": child, "parts": parts_dict})
+            dp_tree.nodes[v]["table"].append(
+                {"vertex": child, "parts": parts_dict})
         processed.add(v)
         root = v
+
     # backtracking
-    return None
+    try:
+        z = next(filter(lambda y: lower <= y <= upper,
+                        dp_tree.nodes[root]["table"][-1]["parts"][parts]))
+    except StopIteration:
+        return None
+
+    assignment = {root: 0}
+    input_queue = [(root, None, parts, len(dp_tree.nodes[v]["table"]) - 1, 0)]
+
+    def process(v, z, k, i, v_part_num):
+        if i == 0:
+            return
+
+        if z is None:  # make a new partition
+            z = next(filter(lambda y: lower <= y <= upper,
+                            dp_tree.nodes[v]["table"][i]["parts"][k]))
+
+        vp = dp_tree.nodes[v]["table"][i]["vertex"]
+        zp, kp = dp_tree.nodes[v]["table"][i]["parts"][k][z].pop()
+        if zp is None:
+            new_part_num = 1 + max(assignment.values(), default=0)
+            assignment[vp] = new_part_num
+            input_queue.append((v, z, kp, i - 1, v_part_num))
+            input_queue.append((vp, None, k - kp,
+                                len(dp_tree.nodes[vp]["table"]) - 1,
+                                new_part_num))
+        else:
+            assignment[vp] = v_part_num
+            input_queue.append((v, zp, kp, i - 1, v_part_num))
+            input_queue.append((vp, z - zp, k - kp + 1,
+                                len(dp_tree.nodes[vp]["table"]) - 1,
+                                v_part_num))
+
+    while input_queue:
+        process(*input_queue.pop())
+
+    print(assignment)
+    return assignment
 
 
 def naive_decision(tree, key, parts, lower, upper):
