@@ -253,26 +253,47 @@ def naive_partition_all(tree, key, parts, lower, upper):
     start = {root: 0}
     input_queue = \
         [(root, None, parts, len(dp_tree.nodes[root]["table"]) - 1, 0)]
+
+    # a queue is a list of partial assignments with associated operations
+    # left to perform on them
     queue = [(start, input_queue)]
 
+    # each process step takes one assignment + assignment queue and processes
+    # one element from the assignment queue
     def process(assignment, assignment_queue):
         try:
+            # pop "real" process arguments here (the process arguments as seen
+            # in the single partition implementation
             v, z, k, i, v_part_num = assignment_queue.pop()
         except IndexError:
+            # if the assignment queue is empty, we're done processing this
+            # and it must be a completed assignment
             return assignment
         if i == 0:
+            # if i == 0, we can ignore this update, just as we returned early
+            # in the single partition version. In case the queue has more
+            # events, we add it back to the old queue
             queue.append((assignment, assignment_queue))
             return
 
+        # all possible z values we must check
         z_values = [z] if z is not None else \
             [y for y in dp_tree.nodes[v]["table"][i]["parts"][k]
              if lower <= y <= upper]
 
+        # new child vertex
         vp = dp_tree.nodes[v]["table"][i]["vertex"]
+
         for z in z_values:
+            # loop over all possible new z and k values
             for zp, kp in dp_tree.nodes[v]["table"][i]["parts"][k][z]:
+                # regardless of values, make copies of assignment and queue
+                # to work with from now on
                 new_a = assignment.copy()
                 new_q = assignment_queue.copy()
+
+                # same branching steps as single partition version, but now
+                # using the new assignment and queue
                 if zp is None:
                     new_part_num = 1 + max(new_a.values(), default=0)
                     new_a[vp] = new_part_num
@@ -286,8 +307,13 @@ def naive_partition_all(tree, key, parts, lower, upper):
                     new_q.append((vp, z - zp, k - kp + 1,
                                   len(dp_tree.nodes[vp]["table"]) - 1,
                                   v_part_num))
+
+                # add new assignment and queue to outer queue
                 queue.append((new_a, new_q))
 
+        # possible memory optimization: del assignment and old queue here
+
+    # continue processing outer queue, accumulating final results, until done
     outputs = []
     while queue:
         if assignment := process(*queue.pop()):
