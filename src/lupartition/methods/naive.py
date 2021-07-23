@@ -314,6 +314,10 @@ def naive_partition_all(tree, key, parts, lower, upper):
         # possible memory optimization: del assignment and old queue here
 
     # continue processing outer queue, accumulating final results, until done
+    # deduplication optimization:
+    # probably need to reprocess every output partition as it comes to use
+    # some sort of ordering that forces partitions identical up to renaming to
+    # be identical, then use frozendicts to deduplicate set of outputs
     outputs = []
     while queue:
         if assignment := process(*queue.pop()):
