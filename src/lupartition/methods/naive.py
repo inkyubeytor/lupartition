@@ -4,80 +4,6 @@ from collections import deque
 from .utils import cartesian_sum, copy, copy_partition, flatten
 
 
-def naive_partition_old(tree, key, parts, lower, upper):
-    """
-    Implements `partition` with the naive O(p^4 u^2 n) algorithm.
-    """
-    # ordered(?) dict of sets
-    # key is i or v_i
-    dp_tree = copy(tree, key, parts, dict)
-    # We adopt the convention that the (k-1)th element of the dp table for a
-    # node v is our current S(T_v, k).
-
-    # Initialize T0 for k = 1
-    for node, node_data in dp_tree.nodes.items():
-        node_data["table"][0][node_data["weight"]] = (2, 0, None)
-
-    # Traverse the graph bottom up, defining children as
-    # already-processed neighbors
-    processed = set()
-    root = None
-    for v in nx.dfs_postorder_nodes(dp_tree):
-        children = set(dp_tree.neighbors(v)) & processed
-        for child in children:
-            new_table = []
-            for k in range(1, parts + 1):
-                s1 = {}
-                for k_prime in range(1, k + 1):
-                    left = dp_tree.nodes[v]["table"][k_prime - 1]
-                    right = dp_tree.nodes[child]["table"][k - k_prime]
-                    for a in left.keys():
-                        for b in right.keys():
-                            s1[a + b] = (1, a, k_prime, child)
-                s2 = {}
-                for k_prime in range(1, k):
-                    left = dp_tree.nodes[v]["table"][k_prime - 1]
-                    right = dp_tree.nodes[child]["table"][k - k_prime]
-                    for b in right.keys():
-                        if lower <= b <= upper:
-                            for a in left.keys():
-                                s2[a] = (2, k_prime, child)
-                s1.update(s2)
-                new_table.append(s1)
-            dp_tree.nodes[v]["table"] = new_table
-        processed.add(v)
-        root = v
-    processed.clear()
-    z = None
-    for x in dp_tree.nodes[root]["table"][parts - 1].keys():
-        if lower <= x <= upper:
-            z = x
-            break
-    if z is None:
-        return None
-    assignment = {}
-    partition_num = 0
-    same_partition = deque([(root, parts)])
-    new_partition_roots = deque()
-    while same_partition or new_partition_roots:
-        if same_partition:
-            v, k = same_partition.popleft()
-        else:  # start new partition
-            partition_num += 1
-            v, k = new_partition_roots.popleft()
-        assignment[v] = partition_num
-        children = set(dp_tree.neighbors(v)) - processed
-        for x in dp_tree.nodes[v]["table"][k - 1].keys():
-            if lower <= x <= upper:
-                zv = x
-                break
-        tup = dp_tree.nodes[v]["table"][k - 1][zv]
-        if tup[0] == 1:
-            _, zp, kp, child = tup
-        else:  # tup[0] == 2
-            _, kp, child = tup
-        processed.add(v)
-
 # Decision version
 # dp_tree                          - whole tree
 # dp_tree.nodes[v]                 - vertex v
@@ -325,32 +251,6 @@ def naive_partition_all(tree, key, parts, lower, upper):
 
     return outputs
 
-# partition_num = 0
-# same_partition = deque([(root, z, parts)])
-# new_partition_roots = deque()
-# while same_partition or new_partition_roots:
-#     if same_partition:
-#         v, zv, k = same_partition.popleft()
-#     else:  # start new partition
-#         partition_num += 1
-#         v, k = new_partition_roots.popleft()
-#         try:
-#             zv = next(filter(lambda y: lower <= y <= upper, dp_tree.nodes[v]["table"][-1]["parts"][k]))
-#         except StopIteration:
-#             raise ValueError("No possible zv value")
-#     assignment[v] = partition_num
-#     zp = zv
-#     kp = k
-#     for child in dp_tree.nodes[v]["table"]:
-#         vi = child["vertex"]
-#         zp, kp = child["parts"][kp][zp]
-#         if zp is not None:  # case 1: connected
-#             same_partition.append((vi,))
-#         else:  # case 2: not connected
-#             new_partition_roots.append((vi,))
-#     # zp, kp = dp_tree.nodes[v]["table"][child][k - 1][zv]
-#     processed.add(v)
-# return assignment
 
 def naive_decision(tree, key, parts, lower, upper):
     """
