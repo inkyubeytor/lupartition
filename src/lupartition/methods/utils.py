@@ -65,7 +65,6 @@ def copy_partition(graph: nx.Graph,
     return dp_graph
 
 
-
 def flatten(sets: Iterable[Set]) -> Set:
     """
     Merges an iterable of sets.
