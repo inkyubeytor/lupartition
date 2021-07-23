@@ -12,7 +12,8 @@ tree1.add_nodes_from([
     (4, {"weight": 3})
 ])
 tree1.add_edges_from([(0, 1), (1, 2), (0, 3), (3, 4)])
-
+# 2-1-0-3-4
+# 2-3-5-2-3
 
 tree2 = nx.Graph()
 tree2.add_nodes_from([(i, {"weight": 1}) for i in range(15)])

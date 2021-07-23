@@ -114,7 +114,7 @@ def naive_partition(tree, key, parts, lower, upper):
     for v in nx.dfs_postorder_nodes(dp_tree):
         children = set(dp_tree.neighbors(v)) & processed
         parts_0 = {k: {} for k in range(2, parts + 1)}
-        parts_0[1] = {dp_tree.nodes[v]["weight"]: (None, 0)}
+        parts_0[1] = {dp_tree.nodes[v]["weight"]: {(None, 0)}}
         dp_tree.nodes[v]["table"] = [{"vertex": None, "parts": parts_0}]
         for child in children:
             parts_dict = {}
@@ -145,9 +145,126 @@ def naive_partition(tree, key, parts, lower, upper):
             dp_tree.nodes[v]["table"].append({"vertex": child, "parts": parts_dict})
         processed.add(v)
         root = v
-    # backtracking
-    return None
 
+    # backtracking
+    try:
+        z = next(filter(lambda y: lower <= y <= upper, dp_tree.nodes[root]["table"][-1]["parts"][parts]))
+    except StopIteration:
+        return None
+    # assignment = {}
+    # partition_num = 0
+    # same_partition = deque([(root, z, parts)])
+    # new_partition_roots = deque()
+    # while same_partition or new_partition_roots:
+    #     if same_partition:
+    #         v, zv, k = same_partition.popleft()
+    #     else:  # start new partition
+    #         partition_num += 1
+    #         v, k = new_partition_roots.popleft()
+    #         try:
+    #             zv = next(filter(lambda y: lower <= y <= upper, dp_tree.nodes[v]["table"][-1]["parts"][k]))
+    #         except StopIteration:
+    #             raise ValueError("No possible zv value")
+    #     assignment[v] = partition_num
+    #     print(v, zv, k)
+    #     for child in reversed(dp_tree.nodes[v]["table"][1:]):
+    #         vi = child["vertex"]
+    #         print(child)
+    #         zp, kp = child["parts"][k][zv].pop()
+    #         print(zp, kp)
+    #         if zp is not None:  # case 1: connected
+    #             same_partition.append((vi, zv - zp, k - kp + 1))
+    #             zv = zp
+    #         else:  # case 2: not connected
+    #             new_partition_roots.append((vi, kp))
+    #         k = kp
+    #     processed.add(v)
+
+    # Abhi's jank recursive code converted to iterative
+    # very cool
+    # much wow
+    assignment = {root: 0}
+    input_queue = [(assignment, root, None, parts, len(dp_tree.nodes[v]["table"]) - 1, 0)]
+
+    # for conversion into all version:
+
+
+    def process(assignment, v, z, k, i, v_part_num):
+        if i == 0:
+            return assignment
+        # print(f"{v=}, {z=}, {k=}, {i=}, {v_part_num=}")
+        if z is None:  # make a new partition
+            z = next(filter(lambda y: lower <= y <= upper, dp_tree.nodes[v]["table"][i]["parts"][k]))
+
+        vp = dp_tree.nodes[v]["table"][i]["vertex"]
+        zp, kp = dp_tree.nodes[v]["table"][i]["parts"][k][z].pop()
+        if zp is None:
+            new_part_num = 1 + max(assignment.values(), default=0)
+            assignment[vp] = new_part_num
+            input_queue.append((assignment, v, z, kp, i - 1, v_part_num))
+            input_queue.append((assignment, vp, None, k - kp, len(dp_tree.nodes[vp]["table"]) - 1, new_part_num))
+        else:
+            assignment[vp] = v_part_num
+            input_queue.append((assignment, v, zp, kp, i - 1, v_part_num))
+            input_queue.append((assignment, vp, z - zp, k - kp + 1, len(dp_tree.nodes[vp]["table"]) - 1, v_part_num))
+
+    while input_queue:
+        process(*input_queue.pop())
+
+    print(assignment)
+    return assignment
+
+
+# dp_tree                          - whole tree
+# dp_tree.nodes[v]                 - vertex v
+# dp_tree.nodes[v]["table"][index i] - vertex v, child i is a dict with values "vertex": v_i,
+#   "parts": k -> Dict { z -> Set{ (z', k') for s1 | (None, k') for s2 } } }
+
+# assignment = { root: 0 }
+# def process(v, z, k, i, v_part_num):
+#   if z is None:  # make a new partition
+#     z = next(filter(lambda y: lower <= y <= upper, dp_tree.nodes[v]["table"][i]["parts"][k]))
+#
+#   vp = dp_tree.nodes[v]["table"][i]["vertex"]
+#   zp, kp = dp_tree.nodes[v]["table"][i]["parts"][k][z].pop()
+#   if zp is None:
+#     new_part_num = 1 + max(assignment, default=0)
+#     assignment[vp] = new_part_num
+#     process(v, z, kp, i - 1, v_part_num)
+#     process(vp, None, k - kp, len(dp_tree.nodes[vp]["table"]) - 1, new_part_num)
+#   else:
+#     assignment[vp] = v_part_num
+#     process(v, zp, kp, i - 1, v_part_num)
+#     process(vp, z - zp, k - kp + 1, len(dp_tree.nodes[vp]["table"]) - 1, v_part_num)
+#
+# process(root, None, parts, len(dp_tree.nodes[v]["table"]) - 1, 0)
+
+# partition_num = 0
+# same_partition = deque([(root, z, parts)])
+# new_partition_roots = deque()
+# while same_partition or new_partition_roots:
+#     if same_partition:
+#         v, zv, k = same_partition.popleft()
+#     else:  # start new partition
+#         partition_num += 1
+#         v, k = new_partition_roots.popleft()
+#         try:
+#             zv = next(filter(lambda y: lower <= y <= upper, dp_tree.nodes[v]["table"][-1]["parts"][k]))
+#         except StopIteration:
+#             raise ValueError("No possible zv value")
+#     assignment[v] = partition_num
+#     zp = zv
+#     kp = k
+#     for child in dp_tree.nodes[v]["table"]:
+#         vi = child["vertex"]
+#         zp, kp = child["parts"][kp][zp]
+#         if zp is not None:  # case 1: connected
+#             same_partition.append((vi,))
+#         else:  # case 2: not connected
+#             new_partition_roots.append((vi,))
+#     # zp, kp = dp_tree.nodes[v]["table"][child][k - 1][zv]
+#     processed.add(v)
+# return assignment
 
 def naive_decision(tree, key, parts, lower, upper):
     """

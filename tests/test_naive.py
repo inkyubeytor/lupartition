@@ -34,7 +34,13 @@ def test_naive_decision():
 
 
 def test_naive_partition_tree1():
-    naive_partition(tree1, "weight", 3, 4, 6)
+    # Positive tests
+    assert naive_partition(tree1, "weight", 3, 4, 6)
+    assert naive_partition(tree1, "weight", 2, 5, 10)
+    # Negative tests
+    assert not naive_partition(tree1, "weight", 1, 4, 6)
+    assert not naive_partition(tree1, "weight", 4, 2, 3)
+    assert not naive_partition(tree1, "weight", 5, 2, 3)
 
 
 def test_naive_partition():
@@ -42,5 +48,5 @@ def test_naive_partition():
 
 
 if __name__ == "__main__":
-    test_naive_decision()
+    # test_naive_decision()
     test_naive_partition()
