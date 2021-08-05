@@ -1,6 +1,7 @@
 """
 Utilities for tests
 """
+from collections import defaultdict
 from random import randint, uniform
 from typing import Dict, Hashable, Union
 
@@ -25,7 +26,19 @@ def check_partition(graph: nx.Graph,
     :param partition: The partition to check against the other parameters.
     :return: Whether the partition is valid.
     """
-    raise NotImplementedError
+    rev_assign = defaultdict(set)
+    for k, v in partition.items():
+        rev_assign[v].add(k)
+    for p in rev_assign.values():
+        # check connectedness
+        subtree = graph.subgraph(p)
+        if not nx.is_connected(subtree):
+            return False
+        # check weight
+        weight = sum(graph.nodes[node][key] for node in p)
+        if not lower <= weight <= upper:
+            return False
+    return True
 
 
 def generate_tree(nodes: int,

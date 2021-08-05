@@ -1,35 +1,70 @@
-from src.lupartition.methods.naive import naive_decision as decision
+from src.lupartition.methods.naive import naive_decision, naive_partition
+from tests.test_graphs import tree1, tree2, tree3
+from tests.utils import check_partition
 
 
-class TestNaiveDecision:
-    def test_naive_decision_tree1(self,
-                                  tree1_pos_test1,
-                                  tree1_pos_test2,
-                                  tree1_neg_test1,
-                                  tree1_neg_test2,
-                                  tree1_neg_test3):
-        # Positive tests
-        assert decision(*tree1_pos_test1)
-        assert decision(*tree1_pos_test2)
-        # Negative tests
-        assert not decision(*tree1_neg_test1)
-        assert not decision(*tree1_neg_test2)
-        assert not decision(*tree1_neg_test3)
+def test_naive_decision_tree1():
+    # Positive tests
+    assert naive_decision(tree1, "weight", 3, 4, 6)
+    assert naive_decision(tree1, "weight", 2, 5, 10)
+    # Negative tests
+    assert not naive_decision(tree1, "weight", 1, 4, 6)
+    assert not naive_decision(tree1, "weight", 4, 2, 3)
+    assert not naive_decision(tree1, "weight", 5, 2, 3)
 
-    def test_naive_decision_tree2(self,
-                                  tree2_pos_test1,
-                                  tree2_pos_test2,
-                                  tree2_neg_test1):
-        # Positive tests
-        assert decision(*tree2_pos_test1)
-        assert decision(*tree2_pos_test2)
-        # Negative tests
-        assert not decision(*tree2_neg_test1)
 
-    def test_naive_decision_tree3(self,
-                                  tree3_pos_test1,
-                                  tree3_neg_test1):
-        # Positive tests
-        assert decision(*tree3_pos_test1)
-        # Negative tests
-        assert not decision(*tree3_neg_test1)
+def test_naive_decision_tree2():
+    # Positive tests
+    assert naive_decision(tree2, "weight", 15, 1, 2)
+    assert naive_decision(tree2, "weight", 5, 3, 3)
+    # Negative tests
+    assert not naive_decision(tree2, "weight", 4, 2, 3)
+
+
+def test_naive_decision_tree3():
+    # Positive tests
+    assert naive_decision(tree3, "mass", 3, 5.5, 8.5)
+    # Negative tests
+    assert not naive_decision(tree3, "mass", 7, 0.5, 5.5)
+
+
+def test_naive_decision():
+    test_naive_decision_tree1()
+    test_naive_decision_tree2()
+    test_naive_decision_tree3()
+
+
+def test_naive_partition_tree1():
+    # Positive tests
+    assert check_partition(tree1, "weight", 3, 4, 6, naive_partition(tree1, "weight", 3, 4, 6))
+    assert check_partition(tree1, "weight", 2, 5, 10, naive_partition(tree1, "weight", 2, 5, 10))
+    # Negative tests
+    assert not naive_partition(tree1, "weight", 1, 4, 6)
+    assert not naive_partition(tree1, "weight", 4, 2, 3)
+    assert not naive_partition(tree1, "weight", 5, 2, 3)
+
+
+def test_naive_partition_tree2():
+    # Positive tests
+    assert check_partition(tree2, "weight", 15, 1, 2, naive_partition(tree2, "weight", 15, 1, 2))
+    assert check_partition(tree2, "weight", 5, 3, 3, naive_partition(tree2, "weight", 5, 3, 3))
+    # Negative tests
+    assert not naive_partition(tree2, "weight", 4, 2, 3)
+
+
+def test_naive_partition_tree3():
+    # Positive tests
+    assert check_partition(tree3, "mass", 3, 5.5, 8.5, naive_partition(tree3, "mass", 3, 5.5, 8.5))
+    # Negative tests
+    assert not naive_partition(tree3, "mass", 7, 0.5, 5.5)
+
+
+def test_naive_partition():
+    test_naive_partition_tree1()
+    test_naive_partition_tree2()
+    test_naive_partition_tree3()
+
+
+if __name__ == "__main__":
+    test_naive_decision()
+    test_naive_partition()
