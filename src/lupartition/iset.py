@@ -1,8 +1,8 @@
+from typing import Set
+
 import networkx as nx
 
 from .utils import copy, flatten
-
-from typing import Set
 
 
 def iset_partition(tree, key, parts, lower, upper):

@@ -1,12 +1,9 @@
+from functools import partial
+
 from src.lupartition import Mode, decision
 
-
-def iset(*args, **kwargs):
-    return decision(*args, **kwargs, mode=Mode.ISET)
-
-
-def naive(*args, **kwargs):
-    return decision(*args, **kwargs, mode=Mode.NAIVE)
+iset = partial(decision, mode=Mode.ISET)
+naive = partial(decision, mode=Mode.NAIVE)
 
 
 class TestComparisonInt:

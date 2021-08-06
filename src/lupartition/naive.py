@@ -159,7 +159,7 @@ def naive_partition_all(tree, key, parts, lower, upper):
         next(filter(lambda y: lower <= y <= upper,
                     dp_tree.nodes[root]["table"][-1]["parts"][parts]))
     except StopIteration:
-        return []
+        return
 
     start = {root: 0}
     input_queue = \
@@ -229,12 +229,9 @@ def naive_partition_all(tree, key, parts, lower, upper):
     # probably need to reprocess every output partition as it comes to use
     # some sort of ordering that forces partitions identical up to renaming to
     # be identical, then use frozendicts to deduplicate set of outputs
-    outputs = []
     while queue:
         if assignment := process(*queue.pop()):
-            outputs.append(assignment)
-
-    return outputs
+            yield assignment
 
 
 def naive_decision(tree, key, parts, lower, upper):

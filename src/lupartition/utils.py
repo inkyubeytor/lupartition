@@ -1,6 +1,6 @@
-import networkx as nx
-
 from typing import Any, Callable, Hashable, Iterable, Set
+
+import networkx as nx
 
 
 def copy(graph: nx.Graph,
