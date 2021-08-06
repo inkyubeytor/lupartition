@@ -159,7 +159,7 @@ def naive_partition_all(tree, key, parts, lower, upper):
         next(filter(lambda y: lower <= y <= upper,
                     dp_tree.nodes[root]["table"][-1]["parts"][parts]))
     except StopIteration:
-        return None
+        return []
 
     start = {root: 0}
     input_queue = \

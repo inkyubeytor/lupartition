@@ -1,5 +1,12 @@
-from src.lupartition.methods.iset import iset_decision as iset
-from src.lupartition.methods.naive import naive_decision as naive
+from src.lupartition import Mode, decision
+
+
+def iset(*args, **kwargs):
+    return decision(*args, **kwargs, mode=Mode.ISET)
+
+
+def naive(*args, **kwargs):
+    return decision(*args, **kwargs, mode=Mode.NAIVE)
 
 
 class TestComparisonInt:
