@@ -1,7 +1,7 @@
 from functools import partial
 
-from src.lupartition import Mode, decision, partition
-from tests.utils import check_partition
+from src.lupartition import Mode, decision, partition, partition_all
+from tests.utils import check_partition, check_partitions
 
 decision = partial(decision, mode=Mode.NAIVE)
 partition = partial(partition, mode=Mode.NAIVE)
@@ -10,6 +10,13 @@ partition = partial(partition, mode=Mode.NAIVE)
 def check_naive_partition(graph, key, parts, lower, upper):
     assignment = partition(graph, key, parts, lower, upper)
     return check_partition(graph, key, parts, lower, upper, assignment)
+
+
+def check_naive_partitions(graph, key, parts, lower, upper):
+    # TODO: rewrite to take advantage of generator and prevent memory errors
+    assignment = list(partition_all(graph, key, parts, lower, upper))
+    print(f"Length = {len(assignment)}")
+    return check_partitions(graph, key, parts, lower, upper, assignment)
 
 
 class TestNaiveDecision:
@@ -64,3 +71,30 @@ class TestNaivePartition:
         assert check_naive_partition(tree3, "mass", 3, 5.5, 8.5)
         # Negative tests
         assert not partition(tree3, "mass", 7, 0.5, 5.5)
+
+
+class TestNaivePartitionAll:
+    def test_rand_tree_int_small(self,
+                                 rand_tree_int_small1,
+                                 rand_tree_int_small2,
+                                 rand_tree_int_small3,
+                                 rand_tree_int_small4,
+                                 rand_tree_int_small5):
+        print("test_rand_tree_int_small")
+        assert check_naive_partitions(*rand_tree_int_small1)
+        assert check_naive_partitions(*rand_tree_int_small2)
+        assert check_naive_partitions(*rand_tree_int_small3)
+        assert check_naive_partitions(*rand_tree_int_small4)
+        assert check_naive_partitions(*rand_tree_int_small5)
+
+    def test_rand_tree_int_med(self,
+                               rand_tree_int_med1):
+        print("test_rand_tree_int_med")
+        assert check_naive_partitions(*rand_tree_int_med1)
+
+    def test_rand_tree_int_large(self,
+                                 rand_tree_int_large1,
+                                 rand_tree_int_large2):
+        print("test_rand_tree_int_large")
+        assert check_naive_partitions(*rand_tree_int_large1)
+        assert check_naive_partitions(*rand_tree_int_large2)
