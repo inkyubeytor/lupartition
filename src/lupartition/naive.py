@@ -2,6 +2,7 @@ from typing import Set
 
 import networkx as nx
 
+from .llmap import LinkedListMaxMap
 from .utils import copy, copy_partition, flatten
 
 
@@ -161,7 +162,7 @@ def naive_partition_all(tree, key, parts, lower, upper):
     except StopIteration:
         return
 
-    start = {root: 0}
+    start = LinkedListMaxMap(0).insert(root, 0)
     input_queue = \
         [(root, None, parts, len(dp_tree.nodes[root]["table"]) - 1, 0)]
 
@@ -179,7 +180,7 @@ def naive_partition_all(tree, key, parts, lower, upper):
         except IndexError:
             # if the assignment queue is empty, we're done processing this
             # and it must be a completed assignment
-            return assignment
+            return assignment.dict()
         if i == 0:
             # if i == 0, we can ignore this update, just as we returned early
             # in the single partition version. In case the queue has more
@@ -200,20 +201,19 @@ def naive_partition_all(tree, key, parts, lower, upper):
             for zp, kp in dp_tree.nodes[v]["table"][i]["parts"][k][z]:
                 # regardless of values, make copies of assignment and queue
                 # to work with from now on
-                new_a = assignment.copy()
                 new_q = assignment_queue.copy()
 
                 # same branching steps as single partition version, but now
                 # using the new assignment and queue
                 if zp is None:
-                    new_part_num = 1 + max(new_a.values(), default=0)
-                    new_a[vp] = new_part_num
+                    new_part_num = 1 + assignment.max()
+                    new_a = assignment.insert(vp, new_part_num)
                     new_q.append((v, z, kp, i - 1, v_part_num))
                     new_q.append((vp, None, k - kp,
                                   len(dp_tree.nodes[vp]["table"]) - 1,
                                   new_part_num))
                 else:
-                    new_a[vp] = v_part_num
+                    new_a = assignment.insert(vp, v_part_num)
                     new_q.append((v, zp, kp, i - 1, v_part_num))
                     new_q.append((vp, z - zp, k - kp + 1,
                                   len(dp_tree.nodes[vp]["table"]) - 1,
