@@ -8,14 +8,13 @@ from typing import Any, Optional
 
 
 @dataclass
-class MapNode:
-    key: Any
-    value: Any
+class Node:
+    data: Any
     # can annotate this with Optional[Self] in Python 3.11+
-    next_node: Optional["MapNode"] = None
+    next_node: Optional["Node"] = None
 
 
-class LinkedListMapIterator:
+class LinkedListIterator:
     def __init__(self, curr_node):
         self.curr_node = curr_node
 
@@ -23,33 +22,43 @@ class LinkedListMapIterator:
         if self.curr_node is None:
             raise StopIteration
         else:
-            k, v = self.curr_node.key, self.curr_node.value
+            d = self.curr_node.data
             self.curr_node = self.curr_node.next_node
-            return k, v
+            return d
 
 
-class LinkedListMap:
+class LinkedList:
     def __init__(self, root=None):
         self.root = root
 
-    def insert(self, key, value):
-        return LinkedListMap(MapNode(key, value, self.root))
+    def insert(self, data):
+        return LinkedList(Node(data, self.root))
 
     def __iter__(self):
-        return LinkedListMapIterator(self.root)
+        return LinkedListIterator(self.root)
 
-    def dict(self):
-        return {k: v for k, v in self}
+    def pop(self):
+        if self.root is None:
+            raise IndexError
+        data = self.root.data
+        self.root = self.root.next_node
+        return data
 
 
-class LinkedListMaxMap(LinkedListMap):
+class LinkedListMaxMap(LinkedList):
     def __init__(self, acc, root=None):
         super().__init__(root)
         self.acc = acc
 
-    def insert(self, key, value):
+    def insert(self, data):
+        raise NotImplementedError
+
+    def assign(self, key, value):
         return LinkedListMaxMap(max(self.acc, value),
-                                MapNode(key, value, self.root))
+                                Node((key, value), self.root))
 
     def max(self):
         return self.acc
+
+    def to_dict(self):
+        return {k: v for k, v in self}
